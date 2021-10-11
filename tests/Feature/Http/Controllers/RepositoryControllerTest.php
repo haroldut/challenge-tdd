@@ -44,6 +44,13 @@ class RepositoryControllerTest extends TestCase
         $this->actingAs($user)->get('repositories')->assertStatus(200)->assertSee($repository->id)->assertSee($repository->url);
     }
 
+    public function test_create()
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)->get("repositories/create")->assertStatus(200);
+    }
+
     public function test_store()
     {
         $data = [
@@ -56,6 +63,42 @@ class RepositoryControllerTest extends TestCase
         $this->actingAs($user)->post('repositories', $data)->assertRedirect('repositories');
 
         $this->assertDatabaseHas('repositories', $data);
+    }
+
+    public function test_show()
+    {
+        $user = User::factory()->create();
+        $repository = Repository::factory([
+            "user_id" => $user->id
+        ])->create();
+
+        $this->actingAs($user)->get("repositories/$repository->id")->assertStatus(200);
+    }
+
+    public function test_show_policy()
+    {
+        $repository = Repository::factory()->create();
+        $user = User::factory()->create();
+
+        $this->actingAs($user)->get("repositories/$repository->id")->assertStatus(403);
+    }
+
+    public function test_edit()
+    {
+        $user = User::factory()->create();
+        $repository = Repository::factory([
+            "user_id" => $user->id
+        ])->create();
+
+        $this->actingAs($user)->get("repositories/$repository->id/edit")->assertStatus(200)->assertSee($repository->url)->assertSee($repository->description);
+    }
+
+    public function test_edit_policy()
+    {
+        $repository = Repository::factory()->create();
+        $user = User::factory()->create();
+
+        $this->actingAs($user)->get("repositories/$repository->id/edit")->assertStatus(403);
     }
 
     public function test_update()
@@ -85,6 +128,7 @@ class RepositoryControllerTest extends TestCase
 
         $this->actingAs($user)->put("repositories/$repository->id", $data)->assertStatus(403);
     }
+
 
     public function test_destroy()
     {
