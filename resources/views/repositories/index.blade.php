@@ -17,6 +17,9 @@
                         <th>
                             Link
                         </th>
+                        <th>
+                            &nbsp;
+                        </th>
                     </tr>
                     </thead>
                     <tbody>
@@ -28,10 +31,15 @@
                         <td>
                             {{$repository->url}}
                         </td>
+                        <td>
+                            <a href="{{ route('repositories.show', $repository) }}">
+                                See
+                            </a>
+                        </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="2">No repositories created</td>
+                        <td colspan="3">No repositories created</td>
                     </tr>
                     @endforelse
                     </tbody>
